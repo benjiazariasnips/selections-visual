@@ -1,0 +1,10 @@
+{
+  version: 1,
+  mediaFileName: 'anyone but you.mp4',
+  cutSegments: [
+    {
+      start: 5433,
+      name: '',
+    },
+  ],
+}

@@ -1,0 +1,10 @@
+{
+  version: 1,
+  mediaFileName: 'movie.mp4',
+  cutSegments: [
+    {
+      start: 570,
+      name: '',
+    },
+  ],
+}

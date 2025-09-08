@@ -1,257 +1,300 @@
-# Video Content Detection Pipeline
+# Comprehensive Video Content & Emotion Detection
 
-A comprehensive Python pipeline for detecting sensitive and intimate content in video frames using state-of-the-art computer vision models.
+A state-of-the-art Python pipeline for detecting adult content and emotions in videos using CLIP (Contrastive Language-Image Pre-training) with advanced multi-method detection and precise timing analysis.
 
 ## Features
 
-This pipeline detects the following content types in video frames:
+### Adult Content Detection
+- **Kissing**: Romantic lip-to-lip contact detection
+- **Hugging**: Physical embrace and affectionate contact
+- **Nudity**: Complete exposure detection
+- **Partial Nudity**: Underwear, topless, or revealing clothing
+- **Intimate Couple**: Sexual or erotic positioning between people
+- **Provocative Dancing**: Suggestive or sensual dance movements
 
-- **Nudity Detection** (using NudeNet):
-  - `nude`: Full exposure (genitals, breasts, buttocks)
-  - `partial_nudity`: Exposed skin without explicit genital exposure
+### Emotion Detection
+- **Happy**: Joy, laughter, and positive expressions
+- **Sad**: Sorrow, crying, and melancholic expressions
+- **Angry**: Rage, fury, and hostile expressions
+- **Fearful**: Fear, anxiety, and scared expressions
+- **Disgusted**: Revulsion, distaste, and aversion expressions
 
-- **Action Recognition** (using MMAction2):
-  - `kissing`: Kiss actions detected above threshold
-  - `hugging`: Hug person actions detected above threshold  
-  - `intimate_couple`: Kissing/hugging with close proximity between people
-  - `provocative_dancing`: Dance actions resembling suggestive movements
+### Advanced Features
+- **Multi-Method Detection**: Combines individual, ensemble, and comparative scoring
+- **Smart Frame Selection**: Intelligent quality-based frame sampling
+- **Precise Timing Analysis**: Second-level analysis for high-confidence segments
+- **Blended Scoring**: Combines segment-level and per-second predictions
+- **Temporal Weighting**: Higher scores near segment centers
+- **Batch Processing**: Efficient incremental CSV output
 
 ## Installation
 
 ### Quick Setup
 
-Run the automated setup script:
-
+1. **Clone the repository**:
 ```bash
-python setup.py
+git clone https://github.com/benjiazariasnips/selections-visual.git
+cd selections-visual
 ```
 
-This will install all required dependencies including PyTorch, MMAction2, NudeNet, and other requirements.
-
-### Manual Installation
-
-If you prefer manual installation:
-
-1. **Install PyTorch** (with CUDA support if available):
-```bash
-# CPU only
-pip install torch torchvision torchaudio
-
-# With CUDA 11.8
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-```
-
-2. **Install MMCV and MMAction2**:
-```bash
-pip install openmim
-mim install mmcv-full
-mim install mmaction2
-```
-
-3. **Install other dependencies**:
+2. **Install dependencies**:
 ```bash
 pip install -r requirements.txt
 ```
+
+### Requirements
+
+The system requires:
+- **PyTorch**: Deep learning framework
+- **Transformers**: For CLIP model access
+- **OpenCV**: Video processing
+- **PIL/Pillow**: Image processing
+- **NumPy/Pandas**: Data manipulation
+- **scikit-learn**: Machine learning utilities
+- **tqdm**: Progress bars
 
 ## Usage
 
 ### Basic Usage
 
+Process a video with default settings:
+
 ```bash
-python main.py <video_path>
+python comprehensive_detection_v9.py --video_path input/movie.mp4
 ```
 
 ### Advanced Usage
 
 ```bash
-python main.py video.mp4 \
-    --output detections.csv \
-    --sample_rate 1.0 \
-    --gpu \
-    --verbose
+python comprehensive_detection_v9.py \
+    --video_path input/movie.mp4 \
+    --device auto \
+    --start_time 0 \
+    --end_time 300 \
+    --segment_duration 6.0 \
+    --lambda_blend 0.75
 ```
 
 ### Parameters
 
-- `video_path`: Path to the input video file (required)
-- `--output, -o`: Output CSV file path (default: `detections.csv`)
-- `--sample_rate, -s`: Sample frames every N seconds (default: 1.0)
-- `--gpu`: Use GPU acceleration if available
-- `--verbose, -v`: Enable verbose logging
+- `--video_path`: Path to input video file (default: `input/movie.mp4`)
+- `--device`: Computing device (`auto`, `cpu`, `cuda`, `mps`) (default: `auto`)
+- `--start_time`: Start time in seconds (default: `114.0`)
+- `--end_time`: End time in seconds (default: full video)
+- `--segment_duration`: Segment length in seconds (default: `6.0`)
+- `--lambda_blend`: Blending coefficient for precise timing (default: `0.75`)
 
-### Examples
+### Device Selection
 
-**Process a video with 2-second intervals:**
-```bash
-python main.py sample_video.mp4 --sample_rate 2.0 --output results.csv
-```
+The system automatically detects the best available device:
+- **CUDA**: NVIDIA GPUs with CUDA support
+- **MPS**: Apple Silicon (M1/M2/M3) GPUs
+- **CPU**: Fallback for systems without GPU acceleration
 
-**Use GPU acceleration:**
-```bash
-python main.py video.mp4 --gpu --verbose
-```
+## Output
 
-**Quick processing (5-second intervals):**
-```bash
-python main.py video.mp4 --sample_rate 5.0 --output quick_scan.csv
-```
+### CSV Results
 
-## Output Format
-
-The pipeline generates a CSV file with the following columns:
+The main output is `output/comprehensive_detection_v9_blended_results.csv` with columns:
 
 | Column | Description |
 |--------|-------------|
-| `frame` | Frame number in the video |
-| `time_sec` | Timestamp in seconds |
-| `labels` | Comma-separated list of detected labels |
+| `time_mmss` | Timestamp in MM:SS format |
+| `second` | Timestamp in seconds |
+| `frame` | Frame number |
+| `kissing_score` | Kissing detection confidence (0-1) |
+| `hugging_score` | Hugging detection confidence (0-1) |
+| `partial_nudity_score` | Partial nudity confidence (0-1) |
+| `intimate_couple_score` | Intimate couple confidence (0-1) |
+| `provocative_dancing_score` | Dancing confidence (0-1) |
+| `nude_score` | Nudity confidence (0-1) |
+| `happy_score` | Happy emotion confidence (0-1) |
+| `sad_score` | Sad emotion confidence (0-1) |
+| `angry_score` | Angry emotion confidence (0-1) |
+| `fearful_score` | Fearful emotion confidence (0-1) |
+| `disgusted_score` | Disgusted emotion confidence (0-1) |
+
+### Precise Timing Results
+
+High-confidence detections are saved to `output/precise_timing_detections.json` with exact timestamps and detailed analysis.
 
 ### Sample Output
 
 ```csv
-frame,time_sec,labels
-30,1.0,partial_nudity
-60,2.0,kissing,intimate_couple
-90,3.0,
-120,4.0,hugging
-150,5.0,provocative_dancing
+time_mmss,second,frame,kissing_score,hugging_score,partial_nudity_score,...
+01:54,114,2736,0.127,0.234,0.089,...
+01:55,115,2760,0.156,0.267,0.098,...
+01:56,116,2784,0.891,0.445,0.123,...
 ```
 
-## Model Details
+## Technical Details
 
-### NudeNet
+### Detection Pipeline
 
-- **Purpose**: Detects nudity and partial nudity
-- **Model**: Pre-trained deep learning model for NSFW content detection
-- **Classes Detected**: 
-  - Explicit: Male/female genitalia, breasts, buttocks
-  - Partial: Belly, armpits, male chest
+1. **Segment Extraction**: Video divided into 6-second segments
+2. **Smart Frame Selection**: Quality-based sampling (4 FPS → 6 best frames)
+3. **Multi-Method Analysis**: 
+   - Individual prompt scoring
+   - Ensemble prompt comparison
+   - Comparative positive/negative analysis
+4. **Calibration**: Content-specific score normalization
+5. **Precise Timing**: Second-level analysis for high scores
+6. **Blended Scoring**: Combines segment and per-second predictions
 
-### MMAction2
+### CLIP-Based Detection
 
-- **Purpose**: Action recognition for intimate behaviors
-- **Models**: VideoMAE, SlowFast, X3D (configurable)
-- **Actions**: Kiss, hug, dance, and other intimate actions
-- **Temporal**: Uses sequence of frames for better accuracy
+Uses OpenAI's CLIP model with carefully crafted prompts:
+- **Positive prompts**: Detailed descriptions of target content
+- **Negative prompts**: Contrasting descriptions for calibration
+- **Weight factors**: Importance ranking for multiple prompts
+- **Calibration parameters**: Content-specific score adjustment
+
+### Blended Scoring Formula
+
+```
+final_score = λ × per_second_score + (1-λ) × segment_score
+```
+
+Where λ (lambda_blend) defaults to 0.75, giving 75% weight to precise per-second analysis and 25% to segment-level context.
+
+## Performance
+
+### Processing Speed
+- **GPU (CUDA)**: ~15-20 segments/minute
+- **Apple Silicon (MPS)**: ~10-15 segments/minute  
+- **CPU**: ~3-5 segments/minute
+
+### Memory Requirements
+- **GPU Memory**: ~4-6GB VRAM
+- **System RAM**: ~8-12GB recommended
+- **Storage**: ~2GB for models + output space
+
+### Accuracy Characteristics
+- **Adult Content**: High precision on clear, well-lit scenes
+- **Emotions**: Good performance on frontal faces with clear expressions
+- **Temporal Context**: Improved accuracy through segment-based analysis
+- **Calibration**: Reduces false positives through multi-method scoring
 
 ## Configuration
 
 ### Detection Thresholds
 
-You can modify detection thresholds in the `VideoContentDetector` class:
+Precision timing thresholds (in `comprehensive_detection_v9.py`):
 
 ```python
-self.kiss_threshold = 0.5      # Kissing detection threshold
-self.hug_threshold = 0.5       # Hugging detection threshold  
-self.dance_threshold = 0.4     # Dancing detection threshold
-self.proximity_threshold = 150 # Pixels for intimate couple detection
+precision_thresholds = {
+    'kissing': 0.7, 'hugging': 0.65, 'nudity': 0.8, 
+    'partial_nudity': 0.7, 'intimate_couple': 0.8, 'dancing': 0.75,
+    'happy': 0.75, 'sad': 0.7, 'angry': 0.6, 
+    'fearful': 0.7, 'disgusted': 0.45
+}
 ```
 
-### GPU Acceleration
+### Calibration Parameters
 
-The pipeline automatically uses GPU if available and enabled:
-
-- **CUDA**: For NVIDIA GPUs
-- **MPS**: For Apple Silicon (M1/M2) Macs
-- **CPU**: Fallback for systems without GPU support
-
-## Performance
-
-### Processing Speed
-
-- **With GPU**: ~10-15 FPS on modern GPUs
-- **CPU Only**: ~2-5 FPS on modern CPUs
-- **Memory**: ~2-4GB RAM + GPU memory
-
-### Accuracy
-
-- **NudeNet**: ~95% accuracy on nudity detection
-- **MMAction2**: ~80-90% accuracy on action recognition
-- **Combined**: Effectiveness depends on video quality and scene complexity
+Each content type has specific calibration settings for optimal score normalization.
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **CUDA Out of Memory**:
+1. **GPU Memory Error**:
    ```bash
-   # Reduce batch size or use CPU
-   python main.py video.mp4 --sample_rate 2.0  # Process fewer frames
+   # Use CPU or reduce segment duration
+   python comprehensive_detection_v9.py --device cpu
    ```
 
-2. **MMAction2 Import Error**:
+2. **Slow Processing**:
    ```bash
-   # Reinstall MMAction2
-   pip uninstall mmaction2
-   mim install mmaction2
+   # Increase segment duration or reduce video length
+   python comprehensive_detection_v9.py --segment_duration 8.0 --end_time 120
    ```
 
-3. **Video Codec Issues**:
+3. **Low Confidence Scores**:
+   - Check video quality and lighting
+   - Ensure faces/content are clearly visible
+   - Consider adjusting calibration parameters
+
+4. **CLIP Model Download**:
    ```bash
-   # Install additional codecs
-   pip install imageio-ffmpeg
+   # Ensure internet connection for first run
+   # Model will be cached locally (~1.7GB)
    ```
 
-4. **Slow Processing**:
-   - Use `--gpu` flag if available
-   - Increase `--sample_rate` to process fewer frames
-   - Ensure video file is not corrupted
+### Debug Information
 
-### Debug Mode
+Enable detailed logging by checking the console output which includes:
+- Device detection and model loading
+- Segment processing progress
+- Score distributions
+- Precise timing analysis results
 
-Enable verbose logging for troubleshooting:
+## Example Results
 
-```bash
-python main.py video.mp4 --verbose
+### High-Confidence Detections
+```
+=== PRECISE TIMING ANALYSIS ===
+High-confidence precise detections: 3
+  kissing: 02:15 (score: 0.892)
+  hugging: 03:42 (score: 0.734)
+  happy: 01:58 (score: 0.821)
 ```
 
-## Limitations
+### Score Distribution
+```
+--- ADULT CONTENT (BLENDED) ---
+kissing_score:
+  Range: 0.000 - 0.892
+  Mean: 0.156, Std: 0.223
+  High confidence (>0.7): 12
 
-- **Single Frame Analysis**: Some actions require temporal context
-- **Model Dependencies**: Requires large pre-trained models (~1-2GB)
-- **Video Formats**: Limited to formats supported by OpenCV
-- **Lighting Conditions**: Performance may vary with poor lighting
-- **Cultural Context**: Models trained on specific datasets may have biases
+--- EMOTION DETECTION (BLENDED) ---
+happy_score:
+  Range: 0.000 - 0.821
+  Mean: 0.234, Std: 0.187
+  High confidence (>0.7): 8
+```
 
 ## Privacy and Ethics
 
 ⚠️ **Important Considerations:**
 
-- This tool is designed for content moderation and safety applications
-- Ensure compliance with local laws and regulations
-- Respect privacy and consent when processing video content
-- Consider potential biases in the underlying models
-- Use responsibly and ethically
+- **Content Moderation**: Designed for safety and compliance applications
+- **Privacy Compliance**: Ensure proper consent and legal compliance
+- **Bias Awareness**: CLIP models may have dataset-specific biases
+- **Responsible Use**: Use ethically and in accordance with local laws
+- **Data Security**: Handle sensitive content detection results securely
 
 ## Contributing
 
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch
-3. Add tests for new functionality
-4. Submit a pull request
+Contributions welcome! Areas for improvement:
+- Additional emotion categories
+- Cultural bias reduction
+- Performance optimization
+- New content detection types
 
 ## License
 
-This project is licensed under the MIT License. See LICENSE file for details.
+MIT License - See LICENSE file for details.
 
 ## Acknowledgments
 
-- **NudeNet**: For robust nudity detection capabilities
-- **MMAction2**: For comprehensive action recognition framework
-- **OpenMMLab**: For the excellent computer vision toolkit
-- **PyTorch**: For the deep learning framework
+- **OpenAI CLIP**: Foundation model for multimodal understanding
+- **PyTorch**: Deep learning framework
+- **Transformers**: Model access and utilities
+- **OpenCV**: Video processing capabilities
 
 ## Support
 
-For issues and questions:
-
-1. Check the troubleshooting section above
-2. Search existing GitHub issues
-3. Create a new issue with detailed information
-4. Include system specifications and error logs
+For issues:
+1. Check troubleshooting section
+2. Review console output for errors
+3. Create GitHub issue with:
+   - System specifications
+   - Error messages
+   - Video characteristics
+   - Expected vs actual behavior
 
 ---
 
-**Disclaimer**: This tool is intended for legitimate content moderation purposes. Users are responsible for ensuring appropriate and legal use of this software.
+**Disclaimer**: This tool is intended for legitimate content analysis and moderation. Users are responsible for ethical and legal use in compliance with applicable regulations.

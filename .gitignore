@@ -1,0 +1,45 @@
+# Large video files (too big for GitHub's 100MB limit)
+input/*.mp4
+input/*.avi
+input/*.mov
+input/*.mkv
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+imagellm/
+venv/
+env/
+
+# Model files (too large for GitHub)
+*.pth
+*.pkl
+*.h5
+*.onnx
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Output files that are too large
+output/*.json
+output/*.xlsm
+
+# Log files
+*.log
