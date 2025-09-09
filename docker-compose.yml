@@ -86,3 +86,48 @@ services:
     tty: true
     restart: unless-stopped
     mem_limit: 4g
+
+# S3-enabled service for cloud video processing
+  video-detection-s3:
+    build: .
+    image: selections-visual:latest
+    container_name: video-content-detector-s3
+    
+    # GPU support (requires nvidia-docker)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - PYTHONUNBUFFERED=1
+      # AWS credentials (use IAM roles in production)
+      - AWS_DEFAULT_REGION=us-east-2
+    
+    volumes:
+      # Mount output directory to persist results
+      - ./output:/app/output
+    
+    working_dir: /app
+    
+    # S3 video processing command
+    command: >
+      python visual_detection_s3.py 
+      --s3_bucket video-bucket-for-ml-project
+      --s3_prefix input_videos/
+      --region us-east-2
+      --device auto 
+      --start_time 0 
+      --segment_duration 6.0 
+      --lambda_blend 0.75
+      --batch_size 8
+      --mixed_precision
+    
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    mem_limit: 8g

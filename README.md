@@ -89,12 +89,19 @@ pip install -r requirements.txt
 
 ## Scripts Available
 
-### `visual_detection.py` (Recommended for Cloud/GPU)
-- **GPU-optimized** version for cloud deployment
+### `visual_detection_s3.py` (Recommended for Cloud + S3)
+- **S3 integration** with direct video download from AWS S3
+- **IAM role-based authentication** (secure, no hardcoded credentials)
+- **GPU-optimized** with mixed precision and batch processing
+- **Automatic video discovery** in S3 buckets
+- **Memory management** and cleanup for cloud environments
+- **Multi-GPU support** with automatic selection
+
+### `visual_detection.py` (Local GPU-Optimized)
+- **GPU-optimized** version for local files
 - **Mixed precision** support for faster inference
 - **Batch processing** for better GPU utilization
 - **Memory management** for cloud environments
-- **Multi-GPU support** with automatic selection
 
 ### `comprehensive_detection_v9.py` (Original)
 - Standard version with all features
@@ -116,7 +123,12 @@ The system requires:
 
 ### Basic Usage
 
-**GPU-Optimized (Recommended for Cloud):**
+**S3 Cloud Processing (Recommended for AWS):**
+```bash
+python visual_detection_s3.py --s3_bucket video-bucket-for-ml-project --s3_prefix input_videos/
+```
+
+**GPU-Optimized (Local Files):**
 ```bash
 python visual_detection.py --video_path input/movie.mp4
 ```
@@ -127,6 +139,22 @@ python comprehensive_detection_v9.py --video_path input/movie.mp4
 ```
 
 ### Advanced Usage
+
+**S3 Cloud Processing with Custom Settings:**
+```bash
+python visual_detection_s3.py \
+    --s3_bucket video-bucket-for-ml-project \
+    --s3_prefix input_videos/ \
+    --s3_key input_videos/specific_video.mp4 \
+    --region us-east-2 \
+    --device auto \
+    --start_time 0 \
+    --end_time 300 \
+    --segment_duration 6.0 \
+    --lambda_blend 0.75 \
+    --batch_size 8 \
+    --mixed_precision
+```
 
 **GPU-Optimized with Custom Settings:**
 ```bash
@@ -154,15 +182,21 @@ python comprehensive_detection_v9.py \
 
 ### Parameters
 
-#### Common Parameters (Both Scripts)
-- `--video_path`: Path to input video file (default: `input/movie.mp4`)
+#### S3 Parameters (`visual_detection_s3.py`)
+- `--s3_bucket`: S3 bucket name (default: `video-bucket-for-ml-project`)
+- `--s3_prefix`: S3 folder prefix (default: `input_videos/`)
+- `--s3_key`: Specific S3 video file to process (optional, processes all if not specified)
+- `--region`: AWS region (default: `us-east-2`)
+
+#### Common Parameters (All Scripts)
+- `--video_path`: Path to input video file (for local scripts)
 - `--device`: Computing device (`auto`, `cpu`, `cuda`, `mps`) (default: `auto`)
-- `--start_time`: Start time in seconds (default: `0.0` for visual_detection.py, `114.0` for comprehensive_detection_v9.py)
+- `--start_time`: Start time in seconds (default: `0.0` for GPU versions, `114.0` for comprehensive_detection_v9.py)
 - `--end_time`: End time in seconds (default: full video)
 - `--segment_duration`: Segment length in seconds (default: `6.0`)
 - `--lambda_blend`: Blending coefficient for precise timing (default: `0.75`)
 
-#### GPU-Optimized Parameters (`visual_detection.py`)
+#### GPU-Optimized Parameters (`visual_detection.py` & `visual_detection_s3.py`)
 - `--batch_size`: Batch size for GPU processing (default: `8`)
 - `--mixed_precision`: Enable mixed precision for faster GPU inference (default: `True`)
 

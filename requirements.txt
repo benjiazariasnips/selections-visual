@@ -1,4 +1,4 @@
-# Requirements for comprehensive_detection_v9.py
+# Requirements for comprehensive_detection_v9.py and visual_detection.py
 # Core ML libraries
 torch>=1.9.0
 transformers>=4.20.0
@@ -16,3 +16,6 @@ scikit-learn>=1.0.0
 
 # Progress bars and utilities
 tqdm>=4.62.0
+
+# AWS S3 support
+boto3>=1.26.0

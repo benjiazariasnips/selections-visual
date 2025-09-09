@@ -44,6 +44,7 @@ RUN pip install -r requirements.txt
 # Copy application code
 COPY comprehensive_detection_v9.py .
 COPY visual_detection.py .
+COPY visual_detection_s3.py .
 COPY activate_imagellm.sh .
 COPY README.md .
 
