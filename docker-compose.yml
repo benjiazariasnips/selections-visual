@@ -32,14 +32,16 @@ services:
     
     working_dir: /app
     
-    # Override default command to run detection
+    # Override default command to run GPU-optimized detection
     command: >
-      python comprehensive_detection_v9.py 
+      python visual_detection.py 
       --video_path input/movie.mp4 
       --device auto 
       --start_time 0 
       --segment_duration 6.0 
       --lambda_blend 0.75
+      --batch_size 8
+      --mixed_precision
     
     # For interactive use
     stdin_open: true
@@ -74,7 +76,7 @@ services:
     working_dir: /app
     
     command: >
-      python comprehensive_detection_v9.py 
+      python visual_detection.py 
       --video_path input/movie.mp4 
       --device cpu 
       --start_time 0 

@@ -43,6 +43,7 @@ RUN pip install -r requirements.txt
 
 # Copy application code
 COPY comprehensive_detection_v9.py .
+COPY visual_detection.py .
 COPY activate_imagellm.sh .
 COPY README.md .
 
@@ -56,8 +57,8 @@ RUN mkdir -p output
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Set default command
-CMD ["python", "comprehensive_detection_v9.py", "--help"]
+# Set default command to GPU-optimized version
+CMD ["python", "visual_detection.py", "--help"]
 
 # Expose any ports if needed (for future web interface)
 EXPOSE 8000

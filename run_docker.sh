@@ -68,12 +68,14 @@ docker run --rm -it \
     -v "$(pwd)/output:/app/output" \
     -e PYTHONUNBUFFERED=1 \
     selections-visual:latest \
-    python comprehensive_detection_v9.py \
+    python visual_detection.py \
     --video_path "$VIDEO_FILE" \
     --device auto \
+    --batch_size 8 \
+    --mixed_precision \
     $ADDITIONAL_ARGS
 
 echo ""
 echo -e "${GREEN}✅ Processing complete!${NC}"
-echo -e "${BLUE}📊 Results saved to: output/comprehensive_detection_v9_blended_results.csv${NC}"
-echo -e "${BLUE}⏰ Precise timing: output/precise_timing_detections.json${NC}"
+echo -e "${BLUE}📊 Results saved to: output/visual_detection_results.csv${NC}"
+echo -e "${BLUE}🚀 GPU-optimized processing with mixed precision${NC}"

@@ -87,6 +87,20 @@ cd selections-visual
 pip install -r requirements.txt
 ```
 
+## Scripts Available
+
+### `visual_detection.py` (Recommended for Cloud/GPU)
+- **GPU-optimized** version for cloud deployment
+- **Mixed precision** support for faster inference
+- **Batch processing** for better GPU utilization
+- **Memory management** for cloud environments
+- **Multi-GPU support** with automatic selection
+
+### `comprehensive_detection_v9.py` (Original)
+- Standard version with all features
+- Good for local development and testing
+- Compatible with all devices (CPU/GPU/MPS)
+
 ### Requirements
 
 The system requires:
@@ -102,14 +116,32 @@ The system requires:
 
 ### Basic Usage
 
-Process a video with default settings:
+**GPU-Optimized (Recommended for Cloud):**
+```bash
+python visual_detection.py --video_path input/movie.mp4
+```
 
+**Original Version:**
 ```bash
 python comprehensive_detection_v9.py --video_path input/movie.mp4
 ```
 
 ### Advanced Usage
 
+**GPU-Optimized with Custom Settings:**
+```bash
+python visual_detection.py \
+    --video_path input/movie.mp4 \
+    --device auto \
+    --start_time 0 \
+    --end_time 300 \
+    --segment_duration 6.0 \
+    --lambda_blend 0.75 \
+    --batch_size 8 \
+    --mixed_precision
+```
+
+**Original Version:**
 ```bash
 python comprehensive_detection_v9.py \
     --video_path input/movie.mp4 \
@@ -122,12 +154,17 @@ python comprehensive_detection_v9.py \
 
 ### Parameters
 
+#### Common Parameters (Both Scripts)
 - `--video_path`: Path to input video file (default: `input/movie.mp4`)
 - `--device`: Computing device (`auto`, `cpu`, `cuda`, `mps`) (default: `auto`)
-- `--start_time`: Start time in seconds (default: `114.0`)
+- `--start_time`: Start time in seconds (default: `0.0` for visual_detection.py, `114.0` for comprehensive_detection_v9.py)
 - `--end_time`: End time in seconds (default: full video)
 - `--segment_duration`: Segment length in seconds (default: `6.0`)
 - `--lambda_blend`: Blending coefficient for precise timing (default: `0.75`)
+
+#### GPU-Optimized Parameters (`visual_detection.py`)
+- `--batch_size`: Batch size for GPU processing (default: `8`)
+- `--mixed_precision`: Enable mixed precision for faster GPU inference (default: `True`)
 
 ### Device Selection
 
