@@ -1,0 +1,70 @@
+# Large video files (will be mounted as volumes instead)
+input/*.mp4
+input/*.avi
+input/*.mov
+input/*.mkv
+
+# Large output files
+output/*.json
+output/*.xlsm
+output/
+
+# Git and version control
+.git
+.gitignore
+
+# Python cache and virtual environments
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+imagellm/
+venv/
+env/
+
+# Model files (too large for image)
+*.pth
+*.pkl
+*.h5
+*.onnx
+best_model.pth
+content_classifier.pth
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Development and testing files
+compare_*.py
+test_*.py
+main_*.py
+comprehensive_detection_v[0-8].py
+comprehensive_detection.py
+enhanced_*.py
+smart_selection_*.py
+final_*.py
+working_*.py
+investigate_*.py
+
+# Installation scripts
+install_env.*
+setup*.py
+
+# Documentation that's not essential
+requirements-core.txt
+
+# Log files
+*.log

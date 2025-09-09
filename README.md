@@ -29,7 +29,52 @@ A state-of-the-art Python pipeline for detecting adult content and emotions in v
 
 ## Installation
 
-### Quick Setup
+### Option 1: Docker (Recommended)
+
+**Quick Start with Docker:**
+
+```bash
+# Clone the repository
+git clone https://github.com/benjiazariasnips/selections-visual.git
+cd selections-visual
+
+# Place your video file in input/ directory
+cp your_video.mp4 input/
+
+# Run with Docker (auto-detects GPU)
+./run_docker.sh input/your_video.mp4
+```
+
+**Docker Commands:**
+
+```bash
+# Build the image
+docker build -t selections-visual .
+
+# Run with GPU support (if available)
+docker run --rm --gpus all \
+  -v $(pwd)/input:/app/input:ro \
+  -v $(pwd)/output:/app/output \
+  selections-visual python comprehensive_detection_v9.py --video_path input/movie.mp4
+
+# Run CPU-only
+docker run --rm \
+  -v $(pwd)/input:/app/input:ro \
+  -v $(pwd)/output:/app/output \
+  selections-visual python comprehensive_detection_v9.py --video_path input/movie.mp4 --device cpu
+```
+
+**Docker Compose:**
+
+```bash
+# Run with docker-compose (GPU)
+docker-compose up video-detection
+
+# Run CPU-only version
+docker-compose --profile cpu-only up video-detection-cpu
+```
+
+### Option 2: Local Installation
 
 1. **Clone the repository**:
 ```bash
@@ -202,12 +247,18 @@ Each content type has specific calibration settings for optimal score normalizat
    ```bash
    # Use CPU or reduce segment duration
    python comprehensive_detection_v9.py --device cpu
+   
+   # With Docker
+   ./run_docker.sh input/movie.mp4 --device cpu --segment_duration 8.0
    ```
 
 2. **Slow Processing**:
    ```bash
    # Increase segment duration or reduce video length
    python comprehensive_detection_v9.py --segment_duration 8.0 --end_time 120
+   
+   # With Docker
+   ./run_docker.sh input/movie.mp4 --segment_duration 8.0 --end_time 120
    ```
 
 3. **Low Confidence Scores**:
@@ -219,6 +270,39 @@ Each content type has specific calibration settings for optimal score normalizat
    ```bash
    # Ensure internet connection for first run
    # Model will be cached locally (~1.7GB)
+   ```
+
+### Docker-Specific Issues
+
+1. **GPU Not Detected in Docker**:
+   ```bash
+   # Install nvidia-docker2
+   curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+   distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+   curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+   sudo apt-get update && sudo apt-get install -y nvidia-docker2
+   sudo systemctl restart docker
+   ```
+
+2. **Permission Denied on output/**:
+   ```bash
+   # Fix ownership of output directory
+   sudo chown -R $(id -u):$(id -g) output/
+   ```
+
+3. **Video File Not Found**:
+   ```bash
+   # Ensure video is in input/ directory
+   ls -la input/
+   # Video files are mounted read-only to /app/input in container
+   ```
+
+4. **Container Out of Memory**:
+   ```bash
+   # Increase Docker memory limit
+   docker run --memory=8g --memory-swap=8g ...
+   
+   # Or modify docker-compose.yml mem_limit
    ```
 
 ### Debug Information

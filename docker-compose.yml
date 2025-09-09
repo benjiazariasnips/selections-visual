@@ -1,0 +1,86 @@
+version: '3.8'
+
+services:
+  video-detection:
+    build: .
+    image: selections-visual:latest
+    container_name: video-content-detector
+    
+    # GPU support (requires nvidia-docker)
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    
+    # Alternative for older docker-compose versions:
+    # runtime: nvidia
+    
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - PYTHONUNBUFFERED=1
+    
+    volumes:
+      # Mount input videos (place your .mp4 files here)
+      - ./input:/app/input:ro
+      # Mount output directory to persist results
+      - ./output:/app/output
+      # Optional: mount additional data
+      - ./data:/app/data:ro
+    
+    working_dir: /app
+    
+    # Override default command to run detection
+    command: >
+      python comprehensive_detection_v9.py 
+      --video_path input/movie.mp4 
+      --device auto 
+      --start_time 0 
+      --segment_duration 6.0 
+      --lambda_blend 0.75
+    
+    # For interactive use
+    stdin_open: true
+    tty: true
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Resource limits
+    mem_limit: 8g
+    memswap_limit: 8g
+    
+    # Optional: expose port for future web interface
+    ports:
+      - "8000:8000"
+
+# Optional: CPU-only version for systems without GPU
+  video-detection-cpu:
+    build: .
+    image: selections-visual:latest
+    container_name: video-content-detector-cpu
+    profiles:
+      - cpu-only
+    
+    environment:
+      - PYTHONUNBUFFERED=1
+    
+    volumes:
+      - ./input:/app/input:ro
+      - ./output:/app/output
+    
+    working_dir: /app
+    
+    command: >
+      python comprehensive_detection_v9.py 
+      --video_path input/movie.mp4 
+      --device cpu 
+      --start_time 0 
+      --segment_duration 6.0
+    
+    stdin_open: true
+    tty: true
+    restart: unless-stopped
+    mem_limit: 4g
